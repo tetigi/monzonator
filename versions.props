@@ -1,1 +1,5 @@
 org.jetbrains.kotlin:* = 1.1.4
+com.palantir.remoting3:* = 3.2.0
+com.palantir.tokens:* = 3.0.0
+com.fasterxml.jackson.module:jackson-module-kotlin = 2.9.0
+joda-time:* = 2.9.9
