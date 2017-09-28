@@ -3,9 +3,11 @@ apply plugin: 'kotlin'
 dependencies {
     compile 'joda-time:joda-time'
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre8'
+    compile 'org.jetbrains.kotlin:kotlin-reflect'
     compile 'com.palantir.remoting3:jersey-servers'
     compile 'com.palantir.tokens:auth-tokens'
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda'
 }
 
 compileKotlin {

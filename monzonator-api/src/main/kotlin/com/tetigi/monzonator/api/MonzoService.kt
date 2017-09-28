@@ -1,6 +1,7 @@
 package com.tetigi.monzonator.api
 
 import com.palantir.tokens.auth.AuthHeader
+import com.tetigi.monzonator.api.responses.GetAccountsResponse
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -12,8 +13,9 @@ interface MonzoService {
      */
     @GET
     @Path("/accounts")
-    fun getAccounts(@HeaderParam("Authorization") authHeader: AuthHeader): List<Account>
+    fun getAccounts(@HeaderParam("Authorization") authHeader: AuthHeader): GetAccountsResponse
 
+    /*
     /**
      * Returns balance information for a specific account.
      */
@@ -132,4 +134,5 @@ interface MonzoService {
             @HeaderParam("Authorization") authHeader: AuthHeader,
             request: DeregisterAttachmentRequest
     )
+    */
 }
