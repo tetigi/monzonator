@@ -8,6 +8,8 @@ dependencies {
     compile 'com.palantir.tokens:auth-tokens'
     compile 'com.fasterxml.jackson.module:jackson-module-kotlin'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda'
+
+    testCompile 'com.palantir.remoting3:jaxrs-clients'
 }
 
 compileKotlin {

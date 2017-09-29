@@ -12,9 +12,9 @@ sealed class FeedItem(
             val title: String,
             val imageUrl: URL,
             val body: String?,
-            val backgroundColor: Color,
-            val titleColor: Color,
-            val bodyColor: Color
+            val backgroundColor: Color?,
+            val titleColor: Color?,
+            val bodyColor: Color?
     ): FeedItem(FeedItemType.BASIC)
 
 }
