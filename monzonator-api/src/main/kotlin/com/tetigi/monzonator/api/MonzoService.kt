@@ -1,7 +1,9 @@
 package com.tetigi.monzonator.api
 
 import com.palantir.tokens.auth.AuthHeader
-import com.tetigi.monzonator.api.responses.GetAccountsResponse
+import com.tetigi.monzonator.api.data.AccountBalance
+import com.tetigi.monzonator.api.requests.*
+import com.tetigi.monzonator.api.responses.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -15,7 +17,6 @@ interface MonzoService {
     @Path("/accounts")
     fun getAccounts(@HeaderParam("Authorization") authHeader: AuthHeader): GetAccountsResponse
 
-    /*
     /**
      * Returns balance information for a specific account.
      */
@@ -34,7 +35,7 @@ interface MonzoService {
     fun getTransaction(
             @HeaderParam("Authorization") authHeader: AuthHeader,
             transactionId: String
-    ): Transaction
+    ): GetTransactionResponse
 
     /**
      * Returns a list of transactions on the user’s account.
@@ -44,7 +45,7 @@ interface MonzoService {
     fun getTransactions(
             @HeaderParam("Authorization") authHeader: AuthHeader,
             @QueryParam("account_id") accountId: String
-    ): List<Transaction>
+    ): GetTransactionsResponse
 
     /* Some sort of patch thing TODO
     /**
@@ -78,7 +79,7 @@ interface MonzoService {
     fun registerWebhook(
             @HeaderParam("Authorization") authHeader: AuthHeader,
             request: RegisterWebhookRequest
-    ): Webhook
+    ): RegisterWebhookResponse
 
     /**
      * List the webhooks your application has registered on an account.
@@ -88,7 +89,7 @@ interface MonzoService {
     fun getWebhooks(
             @HeaderParam("Authorization") authHeader: AuthHeader,
             @QueryParam("account_id") accountId: String
-    ): List<Webhook>
+    ): ListWebhooksResponse
 
     /**
      * When you delete a webhook, we will no longer send notifications to it.
@@ -134,5 +135,4 @@ interface MonzoService {
             @HeaderParam("Authorization") authHeader: AuthHeader,
             request: DeregisterAttachmentRequest
     )
-    */
 }

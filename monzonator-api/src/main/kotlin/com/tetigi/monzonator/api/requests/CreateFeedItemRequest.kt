@@ -1,9 +1,11 @@
-package com.tetigi.monzonator.api
+package com.tetigi.monzonator.api.requests
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.palantir.remoting3.ext.jackson.ObjectMappers
+import com.tetigi.monzonator.api.data.FeedItem
+import com.tetigi.monzonator.api.data.FeedItemType
 import java.net.URL
 
 data class CreateFeedItemRequest(

@@ -1,4 +1,4 @@
-package com.tetigi.monzonator.api
+package com.tetigi.monzonator.api.data
 
 import org.joda.time.DateTime
 import java.util.*

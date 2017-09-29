@@ -1,4 +1,4 @@
-package com.tetigi.monzonator.api
+package com.tetigi.monzonator.api.data
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.joda.time.DateTime

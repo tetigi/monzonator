@@ -1,4 +1,4 @@
-package com.tetigi.monzonator.api
+package com.tetigi.monzonator.api.responses
 
 import java.net.URL
 

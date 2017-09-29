@@ -1,4 +1,4 @@
-package com.tetigi.monzonator.api
+package com.tetigi.monzonator.api.requests
 
 data class UploadAttachmentRequest(
         val fileName: String,
