@@ -10,9 +10,9 @@ data class Transaction(
         val currency: Currency,
         val description: String,
         val id: String,
-        val merchant: Merchant,
+        val merchant: Merchant?,
         val metadata: Map<String, Any>,
         val notes: String,
         val isLoad: Boolean,
-        val settled: DateTime
+        val settled: DateTime?
         )

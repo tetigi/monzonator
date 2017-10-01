@@ -1,8 +1,8 @@
-package com.palantir.remoting3.jaxrs
+package com.palantir.remoting3.retrofit2
 
 import com.palantir.remoting3.clients.ClientConfiguration
 
-object KotlinJaxRsClient {
+object KotlinRetrofit2Client {
     fun<T> create(serviceClass: Class<T>, userAgent: String, config: ClientConfiguration): T =
-            KotlinFeignJaxRsClientBuilder(config).build(serviceClass, userAgent)
+            KotlinRetrofit2ClientBuilder(config).build(serviceClass, userAgent)
 }

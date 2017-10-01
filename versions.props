@@ -4,3 +4,5 @@ com.palantir.tokens:* = 3.0.0
 com.fasterxml.jackson.module:* = 2.9.1
 com.fasterxml.jackson.datatype:* = 2.9.1
 joda-time:* = 2.9.9
+junit:* = 4.12
+com.squareup.retrofit2:* = 2.3.0

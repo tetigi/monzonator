@@ -4,48 +4,42 @@ import com.palantir.tokens.auth.AuthHeader
 import com.tetigi.monzonator.api.data.AccountBalance
 import com.tetigi.monzonator.api.requests.*
 import com.tetigi.monzonator.api.responses.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import retrofit2.Call
+import retrofit2.http.*
 
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 interface MonzoService {
     /**
      * Returns a list of accounts owned by the currently authorised user.
      */
-    @GET
-    @Path("/accounts")
-    fun getAccounts(@HeaderParam("Authorization") authHeader: AuthHeader): GetAccountsResponse
+    @GET("accounts")
+    fun getAccounts(@Header("Authorization") authHeader: AuthHeader): Call<GetAccountsResponse>
 
     /**
      * Returns balance information for a specific account.
      */
-    @GET
-    @Path("/balance")
+    @GET("balance")
     fun getBalance(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
-            @QueryParam("account_id") accountId: String
-    ): AccountBalance
+            @Header("Authorization") authHeader: AuthHeader,
+            @Query("account_id") accountId: String
+    ): Call<AccountBalance>
 
     /**
      * Returns an individual transaction, fetched by its id.
      */
-    @GET
-    @Path("/transactions/{transactionId}")
+    @GET("transactions/{transactionId}?expand[]=merchant")
     fun getTransaction(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
-            transactionId: String
-    ): GetTransactionResponse
+            @Header("Authorization") authHeader: AuthHeader,
+            @Path("transactionId") transactionId: String
+    ): Call<GetTransactionResponse>
 
     /**
      * Returns a list of transactions on the user’s account.
      */
-    @GET
-    @Path("/transactions")
+    @GET("transactions?expand[]=merchant")
     fun getTransactions(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
-            @QueryParam("account_id") accountId: String
-    ): GetTransactionsResponse
+            @Header("Authorization") authHeader: AuthHeader,
+            @Query("account_id") accountId: String
+    ): Call<GetTransactionsResponse>
 
     /* Some sort of patch thing TODO
     /**
@@ -54,7 +48,7 @@ interface MonzoService {
     @POST
     @Path("transactions/{transactionId}")
     fun annotateTransaction(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
+            @Header("Authorization") authHeader: AuthHeader,
             transactionId: String
     ): Transaction
     */
@@ -62,56 +56,50 @@ interface MonzoService {
     /**
      * Creates a new feed item on the user’s feed. These can be dismissed.
      */
-    @POST
-    @Path("/feed")
+    @POST("/feed")
     fun createFeedItem(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
-            @QueryParam("account_id") accountId: String,
+            @Header("Authorization") authHeader: AuthHeader,
             request: CreateFeedItemRequest
-    )
+    ): Call<Void>
 
     /**
      * Each time a matching event occurs, we will make a POST call to the URL you provide.
      * If the call fails, we will retry up to a maximum of 5 attempts, with exponential backoff.
      */
-    @POST
-    @Path("/webhooks")
+    @POST("/webhooks")
     fun registerWebhook(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
+            @Header("Authorization") authHeader: AuthHeader,
             request: RegisterWebhookRequest
-    ): RegisterWebhookResponse
+    ): Call<RegisterWebhookResponse>
 
     /**
      * List the webhooks your application has registered on an account.
      */
-    @GET
-    @Path("/webhooks")
+    @GET("/webhooks")
     fun getWebhooks(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
-            @QueryParam("account_id") accountId: String
-    ): ListWebhooksResponse
+            @Header("Authorization") authHeader: AuthHeader,
+            @Query("account_id") accountId: String
+    ): Call<ListWebhooksResponse>
 
     /**
      * When you delete a webhook, we will no longer send notifications to it.
      */
-    @DELETE
-    @Path("/webhooks/{webhookId}")
+    @DELETE("/webhooks/{webhookId}")
     fun deleteWebhook(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
+            @Header("Authorization") authHeader: AuthHeader,
             webhookId: String
-    )
+    ): Call<Void>
 
     /**
      * The first step when uploading an attachment is to obtain a temporary URL to which the file can be uploaded.
      * The response will include a file_url which will be the URL of the resulting file,
      * and an upload_url to which the file should be uploaded to.
      */
-    @POST
-    @Path("/attachment/upload")
+    @POST("/attachment/upload")
     fun uploadAttachment(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
+            @Header("Authorization") authHeader: AuthHeader,
             request: UploadAttachmentRequest
-    ): UploadAttachmentResponse
+    ): Call<UploadAttachmentResponse>
 
     /**
      * Once you have obtained a URL for an attachment, either by uploading to the upload_url obtained from the
@@ -119,20 +107,18 @@ interface MonzoService {
      * Once an attachment is registered against a transaction this will be displayed on the detail page of
      * a transaction within the Monzo app.
      */
-    @POST
-    @Path("/attachment/register")
+    @POST("/attachment/register")
     fun registerAttachment(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
+            @Header("Authorization") authHeader: AuthHeader,
             request: RegisterAttachmentRequest
-    ): RegisterAttachmentResponse
+    ): Call<RegisterAttachmentResponse>
 
     /**
      * To remove an attachment, simply deregister this using its id
      */
-    @POST
-    @Path("/attachment/deregister")
+    @POST("/attachment/deregister")
     fun deregisterAttachment(
-            @HeaderParam("Authorization") authHeader: AuthHeader,
+            @Header("Authorization") authHeader: AuthHeader,
             request: DeregisterAttachmentRequest
-    )
+    ): Call<Void>
 }

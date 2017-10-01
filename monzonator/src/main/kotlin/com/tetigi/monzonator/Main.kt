@@ -3,8 +3,7 @@ package com.tetigi.monzonator
 import com.palantir.remoting.api.config.ssl.SslConfiguration
 import com.palantir.remoting3.clients.ClientConfigurations
 import com.palantir.remoting3.config.ssl.SslSocketFactories
-import com.palantir.remoting3.jaxrs.JaxRsClient
-import com.palantir.remoting3.jaxrs.KotlinJaxRsClient
+import com.palantir.remoting3.retrofit2.KotlinRetrofit2Client
 import com.palantir.tokens.auth.AuthHeader
 import com.palantir.tokens.auth.BearerToken
 import com.tetigi.monzonator.api.MonzoService
@@ -20,8 +19,7 @@ object Main {
                 SslSocketFactories.createX509TrustManager(sslConfig)
         )
 
-
-        val monzo = KotlinJaxRsClient.create(MonzoService::class.java, "monzo", config)
+        val monzo = KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
 
         println("Hello, world!")
 
