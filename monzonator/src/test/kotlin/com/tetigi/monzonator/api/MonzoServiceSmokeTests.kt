@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType
 class MonzoServiceSmokeTests {
 
     companion object {
-        private val TEST_URL: URL = URL("http://google.com")
+        private val TEST_URL: URL = URL("http://www.nyan.cat/cats/original.gif")
     }
 
     private fun monzoService(): MonzoService {
@@ -39,7 +39,7 @@ class MonzoServiceSmokeTests {
     }
 
     private fun token(): AuthHeader =
-        AuthHeader.of(BearerToken.valueOf("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaSI6Im9hdXRoY2xpZW50XzAwMDA5NFB2SU5ER3pUM2s2dHo4anAiLCJleHAiOjE1MDY4Njc1NzMsImlhdCI6MTUwNjg0NTk3MywianRpIjoidG9rXzAwMDA5UDRQVW05Qm8zNWJoUll5bnAiLCJ1aSI6InVzZXJfMDAwMDlDbzBTVjNBRXhncDU0NDR1WCIsInYiOiIyIn0.yQMgcXyl-85q8QNxvrV2csMkLpK6CLQElradYxnyPbM"))
+        AuthHeader.of(BearerToken.valueOf("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaSI6Im9hdXRoY2xpZW50XzAwMDA5NFB2SU5ER3pUM2s2dHo4anAiLCJleHAiOjE1MDcwNjU4MjIsImlhdCI6MTUwNzA0NDIyMiwianRpIjoidG9rXzAwMDA5UDlBTk5oSm1lQ3g2V3FuV1QiLCJ1aSI6InVzZXJfMDAwMDlDbzBTVjNBRXhncDU0NDR1WCIsInYiOiIyIn0.UzkJx3l3fZv9ocZP8uqbaJfG5aZv3puuOM0dOn39ezc"))
 
     private fun anAccountId(): String {
         val response = monzoService().getAccounts(token()).call()
@@ -76,8 +76,7 @@ class MonzoServiceSmokeTests {
 
     @Test
     fun testGetAccounts() {
-        // TODO clean this up
-        println(monzoService().getAccounts(token()).call())
+        monzoService().getAccounts(token()).call()
     }
 
     @Test
@@ -106,15 +105,16 @@ class MonzoServiceSmokeTests {
         monzoService().createFeedItem(
                 token(),
                 CreateFeedItemRequest.fromFeedItem(
-                        "1234",//anAccountId(),
+                        anAccountId(),
                         FeedItem.BasicFeedItem(
-                                "test",
+                                "Hullo from monzonator",
                                 TEST_URL,
-                                null,
+                                "THIS IS REAL LIFE",
                                 null,
                                 null,
                                 null
-                        )
+                        ),
+                        URL("http://www.nyan.cat/")
                 )
         ).call()
     }

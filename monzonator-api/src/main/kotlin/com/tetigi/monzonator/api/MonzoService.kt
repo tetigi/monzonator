@@ -57,10 +57,11 @@ interface MonzoService {
      * Creates a new feed item on the user’s feed. These can be dismissed.
      */
     @POST("/feed")
+    @FormUrlEncoded
     fun createFeedItem(
             @Header("Authorization") authHeader: AuthHeader,
-            request: CreateFeedItemRequest
-    ): Call<Void>
+            @FieldMap request: CreateFeedItemRequest
+    ): Call<Empty>
 
     /**
      * Each time a matching event occurs, we will make a POST call to the URL you provide.
@@ -88,7 +89,7 @@ interface MonzoService {
     fun deleteWebhook(
             @Header("Authorization") authHeader: AuthHeader,
             webhookId: String
-    ): Call<Void>
+    ): Call<Empty>
 
     /**
      * The first step when uploading an attachment is to obtain a temporary URL to which the file can be uploaded.
@@ -120,5 +121,5 @@ interface MonzoService {
     fun deregisterAttachment(
             @Header("Authorization") authHeader: AuthHeader,
             request: DeregisterAttachmentRequest
-    ): Call<Void>
+    ): Call<Empty>
 }

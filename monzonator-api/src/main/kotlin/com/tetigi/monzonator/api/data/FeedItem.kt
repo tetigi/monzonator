@@ -2,7 +2,6 @@ package com.tetigi.monzonator.api.data
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.palantir.remoting3.ext.jackson.ObjectMappers
 import java.awt.Color
@@ -22,7 +21,4 @@ sealed class FeedItem(
             val titleColor: Color?,
             val bodyColor: Color?
     ): FeedItem(FeedItemType.basic)
-
-    fun asParams(): Map<String, Any> =
-            MAPPER.readValue(MAPPER.writeValueAsString(this))
 }
