@@ -28,7 +28,7 @@ class MonzoServiceSmokeTests {
     private fun monzoService(): MonzoService {
         val sslConfig = SslConfiguration.of(Paths.get("var/security/truststore.jks"))
         val config = ClientConfigurations.of(
-                listOf("https://api.monzo.com"),
+                listOf(MonzoService.DEFAULT_MONZO_URL),
                 //listOf("http://localhost:8080"),
                 SslSocketFactories.createSslSocketFactory(sslConfig),
                 SslSocketFactories.createX509TrustManager(sslConfig)

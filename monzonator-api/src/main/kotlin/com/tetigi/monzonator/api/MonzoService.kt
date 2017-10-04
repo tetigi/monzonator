@@ -122,4 +122,8 @@ interface MonzoService {
             @Header("Authorization") authHeader: AuthHeader,
             request: DeregisterAttachmentRequest
     ): Call<Empty>
+
+    companion object {
+        val DEFAULT_MONZO_URL: String = "https://api.monzo.com"
+    }
 }
