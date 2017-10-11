@@ -4,6 +4,8 @@ apply plugin: 'com.palantir.sls-java-service-distribution'
 dependencies {
     compile project(':monzonator-api')
     compile 'com.palantir.remoting3:retrofit2-clients'
+    compile 'com.palantir.remoting3:jaxrs-clients'
+    compile 'io.dropwizard:dropwizard-core'
 
     testCompile 'junit:junit'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"

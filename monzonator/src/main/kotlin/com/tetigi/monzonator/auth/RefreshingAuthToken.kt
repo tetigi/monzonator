@@ -4,7 +4,6 @@ import com.palantir.remoting3.retrofit2.call
 import com.palantir.tokens.auth.AuthHeader
 import com.palantir.tokens.auth.BearerToken
 import com.tetigi.monzonator.api.MonzoAuthService
-import com.tetigi.monzonator.api.data.auth.GrantType
 import com.tetigi.monzonator.api.data.auth.TokenType
 import com.tetigi.monzonator.api.requests.auth.RefreshTokenRequest
 import com.tetigi.monzonator.api.responses.TokenResponse
@@ -31,7 +30,7 @@ class RefreshingAuthToken(
     }
 
     private fun createBearerToken(tokenResponse: TokenResponse): BearerToken {
-        if (tokenResponse.tokenType != TokenType.BEARER) {
+        if (tokenResponse.tokenType != TokenType.Bearer) {
             error("Cannot create AuthHeader from token not of BEARER type!")
         } else {
             return BearerToken.valueOf(tokenResponse.accessToken)
@@ -42,7 +41,7 @@ class RefreshingAuthToken(
     override fun getBearerToken(): BearerToken {
         if (shouldRefresh()) {
             val tokenResponse = authService.refreshToken(
-                    RefreshTokenRequest(GrantType.AUTHORIZATION_CODE, clientId, clientSecret, refreshToken))
+                    RefreshTokenRequest(clientId, clientSecret, refreshToken))
                     .call()
 
             cachedBearerToken = createBearerToken(tokenResponse)

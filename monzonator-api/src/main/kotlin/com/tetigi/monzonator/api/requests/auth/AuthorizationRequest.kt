@@ -5,15 +5,14 @@ import com.tetigi.monzonator.utils.FieldMappable
 import java.net.URL
 
 data class AuthorizationRequest(
-        val grantType: GrantType,
         val clientId: String,
         val clientSecret: String,
         val redirectUri: URL,
         val code: String
 ): FieldMappable(
-        "grant_type" to grantType,
+        "grant_type" to GrantType.authorization_code,
         "client_id" to clientId,
         "client_secret" to clientSecret,
-        "redirectUri" to redirectUri,
+        "redirect_uri" to redirectUri,
         "code" to code
 )

@@ -1,14 +1,17 @@
 package com.tetigi.monzonator.api
 
 import com.palantir.tokens.auth.AuthHeader
-import retrofit2.http.GET
-import retrofit2.http.Query
+import javax.ws.rs.GET
+import javax.ws.rs.Path
+import javax.ws.rs.QueryParam
 
+@Path("/oauth")
 interface MonzoRefreshingTokenService {
-    @GET(CALLBACK_URL)
+    @GET
+    @Path("/callback")
     fun authorizationCallback(
-            @Query("code") authorizationCode: String,
-            @Query("state") stateToken: String
+            @QueryParam("code") authorizationCode: String,
+            @QueryParam("state") stateToken: String
     )
 
     /**

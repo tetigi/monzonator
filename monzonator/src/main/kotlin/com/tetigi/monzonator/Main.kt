@@ -4,27 +4,54 @@ import com.palantir.remoting.api.config.ssl.SslConfiguration
 import com.palantir.remoting3.clients.ClientConfigurations
 import com.palantir.remoting3.config.ssl.SslSocketFactories
 import com.palantir.remoting3.retrofit2.KotlinRetrofit2Client
-import com.palantir.tokens.auth.AuthHeader
-import com.palantir.tokens.auth.BearerToken
+import com.palantir.remoting3.retrofit2.call
+import com.palantir.remoting3.servers.jersey.HttpRemotingJerseyFeature
+import com.tetigi.monzonator.api.MonzoAuthService
+import com.tetigi.monzonator.api.MonzoRefreshingTokenService
 import com.tetigi.monzonator.api.MonzoService
+import com.tetigi.monzonator.resources.MonzoRefreshingTokenResource
+import io.dropwizard.Application
+import io.dropwizard.Configuration
+import io.dropwizard.setup.Environment
+import java.net.URL
 import java.nio.file.Paths
 
-object Main {
-    @JvmStatic
-    fun main(args: Array<String>) {
-        val sslConfig = SslConfiguration.of(Paths.get("/home/tetigi/git/monzonator/var/security/truststore.jks"))
-        val config = ClientConfigurations.of(
-                listOf("https://api.monzo.com"),
-                SslSocketFactories.createSslSocketFactory(sslConfig),
-                SslSocketFactories.createX509TrustManager(sslConfig)
-        )
+class Main(
+        private val tokenService: MonzoRefreshingTokenService
+): Application<Configuration>() {
 
-        val monzo = KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
 
-        println("Hello, world!")
+    override fun run(configuration: Configuration, env: Environment) {
+        env.jersey().register(HttpRemotingJerseyFeature.INSTANCE)
+        env.jersey().register(tokenService)
+    }
 
-        val token = AuthHeader.of(BearerToken.valueOf("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaSI6Im9hdXRoY2xpZW50XzAwMDA5NFB2SU5ER3pUM2s2dHo4anAiLCJleHAiOjE1MDY2NDIwOTEsImlhdCI6MTUwNjYyMDQ5MSwianRpIjoidG9rXzAwMDA5T3owNmk0RnF4bWpqVUlZZE4iLCJ1aSI6InVzZXJfMDAwMDlDbzBTVjNBRXhncDU0NDR1WCIsInYiOiIyIn0.QckDR5aLi4pBjRb6UWgm6L2_IeJMNrYV2eQ9eNqSWAU"))
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val sslConfig = SslConfiguration.of(Paths.get("monzonator/var/security/truststore.jks"))
+            val config = ClientConfigurations.of(
+                    listOf(MonzoService.DEFAULT_MONZO_URL),
+                    SslSocketFactories.createSslSocketFactory(sslConfig),
+                    SslSocketFactories.createX509TrustManager(sslConfig)
+            )
 
-        println(monzo.getAccounts(token))
+            val authService = KotlinRetrofit2Client.create(MonzoAuthService::class.java, "auth", config)
+
+            val tokenService = MonzoRefreshingTokenResource(
+                    "oauthclient_00009PQ9yINphwvcOOzTGL",
+                    args[1],
+                    authService,
+                    URL("http://localhost:8080")
+            )
+
+            Main(tokenService).run(*args.take(1).toTypedArray())
+
+            tokenService.startAuthTokenRequest()
+
+            val monzo = KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
+
+            println(monzo.getAccounts(tokenService.getRefreshingToken()).call())
+        }
     }
 }

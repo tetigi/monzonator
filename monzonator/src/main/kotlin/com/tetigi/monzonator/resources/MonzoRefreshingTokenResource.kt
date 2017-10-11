@@ -4,7 +4,6 @@ import com.palantir.remoting3.retrofit2.call
 import com.palantir.tokens.auth.AuthHeader
 import com.tetigi.monzonator.api.MonzoAuthService
 import com.tetigi.monzonator.api.MonzoRefreshingTokenService
-import com.tetigi.monzonator.api.data.auth.GrantType
 import com.tetigi.monzonator.api.requests.auth.AuthorizationRequest
 import com.tetigi.monzonator.auth.RefreshingAuthToken
 import org.slf4j.Logger
@@ -16,26 +15,32 @@ import java.util.concurrent.atomic.AtomicReference
 class MonzoRefreshingTokenResource(
         private val clientId: String,
         private val clientSecret: String,
-        private val redirectUri: URL,
-        private val authService: MonzoAuthService
+        private val authService: MonzoAuthService,
+        private val serviceLocation: URL
 ): MonzoRefreshingTokenService {
 
     private val LOG: Logger = LoggerFactory.getLogger(this::class.java)
 
     private val state: AtomicReference<String?> = AtomicReference(null)
     private val authToken: AtomicReference<AuthHeader?> = AtomicReference(null)
+    private val redirectUri: URL = URL("$serviceLocation/${MonzoRefreshingTokenService.CALLBACK_URL}")
 
-    fun startAuthTokenRequest(serviceLocation: URL) {
+    fun startAuthTokenRequest() {
         val state = UUID.randomUUID().toString()
         this.state.set(state)
         val authLink = MonzoAuthService.getAuthLink(
                 clientId,
-                URL("$serviceLocation/${MonzoRefreshingTokenService.CALLBACK_URL}"),
+                redirectUri,
                 state
         )
 
         // Right now this will just log to console, but should eventually do something useful I would imagine
         LOG.info("Auth URL -> $authLink")
+
+        while (authToken.get() == null) {
+            LOG.info("No token yet - sleeping..")
+            Thread.sleep(5000)
+        }
     }
 
     override fun authorizationCallback(authorizationCode: String, stateToken: String) {
@@ -43,14 +48,17 @@ class MonzoRefreshingTokenResource(
             error("STATE TOKENS DON'T MATCH, ABORT!")
         }
 
+        LOG.info("Got auth callback with $authorizationCode and state $stateToken")
+
         val tokenResponse = authService.authorizeToken(
                 AuthorizationRequest(
-                        GrantType.AUTHORIZATION_CODE,
                         clientId,
                         clientSecret,
                         redirectUri,
                         authorizationCode)
         ).call()
+
+        LOG.info("Got token response: $tokenResponse")
 
         authToken.set(RefreshingAuthToken(authService, clientId, clientSecret, tokenResponse))
     }
