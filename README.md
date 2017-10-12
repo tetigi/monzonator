@@ -95,11 +95,11 @@ it's a bit of a pain in the ass. You need to handle multiple secrets, redirects 
 which also needs to be refreshed every few hours!
 
 Fortunately, `monzonator` has got your back. By hosting the `MonzoRefreshingTokenResource` in your Monzo app, you
-can trigger the auth workflow through their and then conveniently get an automatically-refreshing token. No more worries!
+can trigger the auth workflow and then conveniently get an automatically-refreshing token. No more worries!
 
 `monzonator` handles the state and authorization codes for you - the only thing that you need to generate and pass to
 `MonzoRefreshingTokenResource` are the client id and secret (which you generate through the Monzo developer API)
-and the serivce location (which should match the redirect URL you specify in the developer API). 
+and the service location (which should match the redirect URL you specify in the developer API). 
 
 For example, when running the server on `localhost`, the server URL passed to the token resource becomes
 `http://localhost:8080`, and the redirect URL in the developer API is `http://localhost:8080/oauth/callback`.
