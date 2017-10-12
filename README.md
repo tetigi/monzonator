@@ -51,8 +51,8 @@ env.jersey().register(HttpRemotingJerseyFeature.INSTANCE)
 env.jersey().register(tokenService)
 ```
 
-Finally, you can kick off the auth workflow (which generates a link, which generates)
-an email auth request, which redirects back to you..
+Finally, you can kick off the auth workflow (which generates a link, which generates an email auth request, 
+which redirects back to you..)
 
 ```kotlin
 tokenService.startBlockingAuthTokenRequest()
