@@ -46,7 +46,7 @@ val tokenService = MonzoRefreshingTokenResource(
 
 And then host that (using Dropwizard, for example):
 
-```
+```kotlin
 env.jersey().register(HttpRemotingJerseyFeature.INSTANCE)
 env.jersey().register(tokenService)
 ```
@@ -54,13 +54,13 @@ env.jersey().register(tokenService)
 Finally, you can kick off the auth workflow (which generates a link, which generates)
 an email auth request, which redirects back to you..
 
-```
+```kotlin
 tokenService.startBlockingAuthTokenRequest()
 ```
 
 Then start making your calls!
 
-```
+```kotlin
 monzo.getAccounts(tokenService.getRefreshingToken()).call()
 ```
 
@@ -71,7 +71,7 @@ authorization workflow around that.
 
 For example, making a call to get your accounts is as simple as:
 
-```
+```kotlin
 val response = monzo.getAccounts(token).call()
 println(response.accounts)
 ```
