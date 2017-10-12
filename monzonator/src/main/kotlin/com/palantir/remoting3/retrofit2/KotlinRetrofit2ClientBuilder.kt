@@ -12,17 +12,14 @@ import com.palantir.remoting3.clients.ClientConfiguration
 import com.palantir.remoting3.ext.jackson.ObjectMappers
 import com.palantir.remoting3.tracing.Tracers
 import com.palantir.remoting3.tracing.okhttp3.OkhttpTraceInterceptor
-import java.util.concurrent.TimeUnit
-import okhttp3.ConnectionPool
-import okhttp3.ConnectionSpec
-import okhttp3.Credentials
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
-import okhttp3.TlsVersion
+import okhttp3.*
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import java.util.concurrent.TimeUnit
 
-// Stolen from palantir/http-remoting to support kotlin
+/**
+ * Stolen from palantir/http-remoting to support kotlin
+ */
 internal class KotlinRetrofit2ClientBuilder(private val config: ClientConfiguration) {
 
     init {
@@ -101,8 +98,8 @@ internal class KotlinRetrofit2ClientBuilder(private val config: ClientConfigurat
                 .registerModule(JodaModule())
         private val OBJECT_MAPPER = ObjectMappers
                 .newClientObjectMapper()
-                .registerKotlinModule()
-                .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+                .registerKotlinModule() // <- the offending line
+                .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE) // <- the other offending line
                 .registerModule(JodaModule())
 
         private fun addTrailingSlashes(uris: List<String>): List<String> {

@@ -16,7 +16,7 @@ class MonzoRefreshingTokenResource(
         private val clientId: String,
         private val clientSecret: String,
         private val authService: MonzoAuthService,
-        private val serviceLocation: URL
+        serviceLocation: URL
 ): MonzoRefreshingTokenService {
 
     private val LOG: Logger = LoggerFactory.getLogger(this::class.java)
@@ -25,7 +25,10 @@ class MonzoRefreshingTokenResource(
     private val authToken: AtomicReference<AuthHeader?> = AtomicReference(null)
     private val redirectUri: URL = URL("$serviceLocation/${MonzoRefreshingTokenService.CALLBACK_URL}")
 
-    fun startAuthTokenRequest() {
+    /**
+     * Initiates the auth token request workflow and blocks until it is completed
+     */
+    fun startBlockingAuthTokenRequest() {
         val state = UUID.randomUUID().toString()
         this.state.set(state)
         val authLink = MonzoAuthService.getAuthLink(
@@ -45,7 +48,7 @@ class MonzoRefreshingTokenResource(
 
     override fun authorizationCallback(authorizationCode: String, stateToken: String) {
         if (stateToken != this.state.get()) {
-            error("STATE TOKENS DON'T MATCH, ABORT!")
+            error("STATE TOKENS DON'T MATCH, ABORT! Expected ${this.state.get()} but got $stateToken")
         }
 
         LOG.info("Got auth callback with $authorizationCode and state $stateToken")

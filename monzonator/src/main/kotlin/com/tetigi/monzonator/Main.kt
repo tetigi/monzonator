@@ -20,7 +20,6 @@ class Main(
         private val tokenService: MonzoRefreshingTokenService
 ): Application<Configuration>() {
 
-
     override fun run(configuration: Configuration, env: Environment) {
         env.jersey().register(HttpRemotingJerseyFeature.INSTANCE)
         env.jersey().register(tokenService)
@@ -29,6 +28,8 @@ class Main(
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
+
+            // Create ssl and client configurations
             val sslConfig = SslConfiguration.of(Paths.get("monzonator/var/security/truststore.jks"))
             val config = ClientConfigurations.of(
                     listOf(MonzoService.DEFAULT_MONZO_URL),
@@ -36,21 +37,27 @@ class Main(
                     SslSocketFactories.createX509TrustManager(sslConfig)
             )
 
+            // Create the auth client
             val authService = KotlinRetrofit2Client.create(MonzoAuthService::class.java, "auth", config)
 
+            // Create the monzo client
+            val monzo = KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
+
+            // The token service handles redirects and authorization workflow
             val tokenService = MonzoRefreshingTokenResource(
-                    "oauthclient_00009PQ9yINphwvcOOzTGL",
                     args[1],
+                    args[2],
                     authService,
                     URL("http://localhost:8080")
             )
 
+            // Args: 0: server, 1: <client_id>, 2: <client_secret>
             Main(tokenService).run(*args.take(1).toTypedArray())
 
-            tokenService.startAuthTokenRequest()
+            // Start the auth token workflow
+            tokenService.startBlockingAuthTokenRequest()
 
-            val monzo = KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
-
+            // Example call
             println(monzo.getAccounts(tokenService.getRefreshingToken()).call())
         }
     }

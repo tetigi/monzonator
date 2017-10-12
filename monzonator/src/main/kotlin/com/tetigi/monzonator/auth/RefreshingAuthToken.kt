@@ -10,6 +10,9 @@ import com.tetigi.monzonator.api.responses.TokenResponse
 import java.time.Clock
 import java.time.Instant
 
+/**
+ * An automatically refreshing authorization token. May not be thread-safe (?)
+ */
 class RefreshingAuthToken(
         private val authService: MonzoAuthService,
         private val clientId: String,

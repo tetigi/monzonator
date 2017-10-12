@@ -5,7 +5,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.palantir.remoting3.ext.jackson.ObjectMappers
 
-abstract class FieldMappable(val map: Map<String, Any?>): Map<String, String> by wrap(map) {
+/**
+ * Wrapper object for making a data class into something that retrofit will accept for the @FieldMap annotation.
+ * Bit of a hack, we essentially have to do our own serialization of the parameters into something that is compliant
+ * with form-url-encoding.
+ */
+abstract class FieldMappable(private val map: Map<String, Any?>): Map<String, String> by wrap(map) {
 
     constructor(vararg pairs: Pair<String, Any?>): this(pairs.toMap())
 
