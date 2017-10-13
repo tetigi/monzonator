@@ -13,7 +13,7 @@ import com.tetigi.monzonator.resources.MonzoRefreshingTokenResource
 import io.dropwizard.Application
 import io.dropwizard.Configuration
 import io.dropwizard.setup.Environment
-import java.net.URL
+import java.net.URI
 import java.nio.file.Paths
 
 class Main(
@@ -32,7 +32,7 @@ class Main(
             // Create ssl and client configurations
             val sslConfig = SslConfiguration.of(Paths.get("monzonator/var/security/truststore.jks"))
             val config = ClientConfigurations.of(
-                    listOf(MonzoService.DEFAULT_MONZO_URL),
+                    listOf(MonzoService.DEFAULT_MONZO_URI),
                     SslSocketFactories.createSslSocketFactory(sslConfig),
                     SslSocketFactories.createX509TrustManager(sslConfig)
             )
@@ -48,7 +48,8 @@ class Main(
                     args[1],
                     args[2],
                     authService,
-                    URL("http://localhost:8080")
+                    URI("https://google.com"),
+                    URI("http://localhost:8080")
             )
 
             // Args: 0: server, 1: <client_id>, 2: <client_secret>

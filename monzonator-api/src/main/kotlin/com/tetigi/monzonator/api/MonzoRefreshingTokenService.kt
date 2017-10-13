@@ -4,6 +4,7 @@ import com.palantir.tokens.auth.AuthHeader
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
+import javax.ws.rs.core.Response
 
 @Path("/oauth")
 interface MonzoRefreshingTokenService {
@@ -12,7 +13,7 @@ interface MonzoRefreshingTokenService {
     fun authorizationCallback(
             @QueryParam("code") authorizationCode: String,
             @QueryParam("state") stateToken: String
-    )
+    ): Response
 
     /**
      * Returns a valid token that is self refreshing.
@@ -22,6 +23,6 @@ interface MonzoRefreshingTokenService {
     fun getRefreshingToken(): AuthHeader
 
     companion object {
-        const val CALLBACK_URL: String = "oauth/callback"
+        const val CALLBACK_URI: String = "oauth/callback"
     }
 }

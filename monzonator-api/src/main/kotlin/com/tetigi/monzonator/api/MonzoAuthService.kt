@@ -8,7 +8,7 @@ import retrofit2.Call
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-import java.net.URL
+import java.net.URI
 
 interface MonzoAuthService {
 
@@ -31,15 +31,15 @@ interface MonzoAuthService {
 
     companion object {
         /**
-         * The default URL for making a request for a new auth token.
-         * Note, this is NOT the URL to make refresh or authorization requests.
-         * Please see [MonzoService.DEFAULT_MONZO_URL]
+         * The default URI for making a request for a new auth token.
+         * Note, this is NOT the URI to make refresh or authorization requests.
+         * Please see [MonzoService.DEFAULT_MONZO_URI]
          */
-        val DEFAULT_MONZO_AUTH_REQUEST_URL: String = "https://auth.getmondo.co.uk"
+        val DEFAULT_MONZO_AUTH_REQUEST_URI: String = "https://auth.getmondo.co.uk"
 
-        fun getAuthLink(clientId: String, redirectUri: URL, state: String): String {
+        fun getAuthLink(clientId: String, redirectUri: URI, state: String): String {
             val escapedRedirectUri = UrlEscapers.urlPathSegmentEscaper().escape(redirectUri.toString())
-            return "$DEFAULT_MONZO_AUTH_REQUEST_URL/?client_id=$clientId&redirect_uri=$escapedRedirectUri&response_type=code&state=$state"
+            return "$DEFAULT_MONZO_AUTH_REQUEST_URI/?client_id=$clientId&redirect_uri=$escapedRedirectUri&response_type=code&state=$state"
         }
     }
 }

@@ -64,13 +64,14 @@ interface MonzoService {
     ): Call<Empty>
 
     /**
-     * Each time a matching event occurs, we will make a POST call to the URL you provide.
+     * Each time a matching event occurs, we will make a POST call to the URI you provide.
      * If the call fails, we will retry up to a maximum of 5 attempts, with exponential backoff.
      */
     @POST("/webhooks")
+    @FormUrlEncoded
     fun registerWebhook(
             @Header("Authorization") authHeader: AuthHeader,
-            request: RegisterWebhookRequest
+            @FieldMap request: RegisterWebhookRequest
     ): Call<RegisterWebhookResponse>
 
     /**
@@ -88,42 +89,45 @@ interface MonzoService {
     @DELETE("/webhooks/{webhookId}")
     fun deleteWebhook(
             @Header("Authorization") authHeader: AuthHeader,
-            webhookId: String
+            @Path("webhookId") webhookId: String
     ): Call<Empty>
 
     /**
-     * The first step when uploading an attachment is to obtain a temporary URL to which the file can be uploaded.
-     * The response will include a file_url which will be the URL of the resulting file,
+     * The first step when uploading an attachment is to obtain a temporary URI to which the file can be uploaded.
+     * The response will include a file_url which will be the URI of the resulting file,
      * and an upload_url to which the file should be uploaded to.
      */
     @POST("/attachment/upload")
+    @FormUrlEncoded
     fun uploadAttachment(
             @Header("Authorization") authHeader: AuthHeader,
-            request: UploadAttachmentRequest
+            @FieldMap request: UploadAttachmentRequest
     ): Call<UploadAttachmentResponse>
 
     /**
-     * Once you have obtained a URL for an attachment, either by uploading to the upload_url obtained from the
-     * upload endpoint above or by hosting a remote image, this URL can then be registered against a transaction.
+     * Once you have obtained a URI for an attachment, either by uploading to the upload_url obtained from the
+     * upload endpoint above or by hosting a remote image, this URI can then be registered against a transaction.
      * Once an attachment is registered against a transaction this will be displayed on the detail page of
      * a transaction within the Monzo app.
      */
     @POST("/attachment/register")
+    @FormUrlEncoded
     fun registerAttachment(
             @Header("Authorization") authHeader: AuthHeader,
-            request: RegisterAttachmentRequest
+            @FieldMap request: RegisterAttachmentRequest
     ): Call<RegisterAttachmentResponse>
 
     /**
      * To remove an attachment, simply deregister this using its id
      */
     @POST("/attachment/deregister")
+    @FormUrlEncoded
     fun deregisterAttachment(
             @Header("Authorization") authHeader: AuthHeader,
-            request: DeregisterAttachmentRequest
+            @FieldMap request: DeregisterAttachmentRequest
     ): Call<Empty>
 
     companion object {
-        val DEFAULT_MONZO_URL: String = "https://api.monzo.com"
+        val DEFAULT_MONZO_URI: String = "https://api.monzo.com"
     }
 }

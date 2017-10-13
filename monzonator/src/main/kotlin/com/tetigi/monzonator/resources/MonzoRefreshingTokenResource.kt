@@ -8,22 +8,24 @@ import com.tetigi.monzonator.api.requests.auth.AuthorizationRequest
 import com.tetigi.monzonator.auth.RefreshingAuthToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URL
+import java.net.URI
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
+import javax.ws.rs.core.Response
 
 class MonzoRefreshingTokenResource(
         private val clientId: String,
         private val clientSecret: String,
         private val authService: MonzoAuthService,
-        serviceLocation: URL
+        private val postAuthRedirect: URI,
+        serviceLocation: URI
 ): MonzoRefreshingTokenService {
 
     private val LOG: Logger = LoggerFactory.getLogger(this::class.java)
 
     private val state: AtomicReference<String?> = AtomicReference(null)
     private val authToken: AtomicReference<AuthHeader?> = AtomicReference(null)
-    private val redirectUri: URL = URL("$serviceLocation/${MonzoRefreshingTokenService.CALLBACK_URL}")
+    private val redirectUri: URI = URI("$serviceLocation/${MonzoRefreshingTokenService.CALLBACK_URI}")
 
     /**
      * Initiates the auth token request workflow and blocks until it is completed
@@ -38,7 +40,7 @@ class MonzoRefreshingTokenResource(
         )
 
         // Right now this will just log to console, but should eventually do something useful I would imagine
-        LOG.info("Auth URL -> $authLink")
+        LOG.info("Auth URI -> $authLink")
 
         while (authToken.get() == null) {
             LOG.info("No token yet - sleeping..")
@@ -46,7 +48,7 @@ class MonzoRefreshingTokenResource(
         }
     }
 
-    override fun authorizationCallback(authorizationCode: String, stateToken: String) {
+    override fun authorizationCallback(authorizationCode: String, stateToken: String): Response {
         if (stateToken != this.state.get()) {
             error("STATE TOKENS DON'T MATCH, ABORT! Expected ${this.state.get()} but got $stateToken")
         }
@@ -64,6 +66,8 @@ class MonzoRefreshingTokenResource(
         LOG.info("Got token response: $tokenResponse")
 
         authToken.set(RefreshingAuthToken(authService, clientId, clientSecret, tokenResponse))
+
+        return Response.temporaryRedirect(postAuthRedirect).build()
     }
 
     override fun getRefreshingToken(): AuthHeader =

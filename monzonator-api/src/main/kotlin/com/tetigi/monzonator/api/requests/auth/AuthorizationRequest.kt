@@ -2,12 +2,12 @@ package com.tetigi.monzonator.api.requests.auth
 
 import com.tetigi.monzonator.api.data.auth.GrantType
 import com.tetigi.monzonator.utils.FieldMappable
-import java.net.URL
+import java.net.URI
 
 data class AuthorizationRequest(
         val clientId: String,
         val clientSecret: String,
-        val redirectUri: URL,
+        val redirectUri: URI,
         val code: String
 ): FieldMappable(
         "grant_type" to GrantType.authorization_code,

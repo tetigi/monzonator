@@ -5,44 +5,70 @@ import com.palantir.remoting3.clients.ClientConfigurations
 import com.palantir.remoting3.config.ssl.SslSocketFactories
 import com.palantir.remoting3.retrofit2.KotlinRetrofit2Client
 import com.palantir.remoting3.retrofit2.call
+import com.palantir.remoting3.servers.jersey.HttpRemotingJerseyFeature
 import com.palantir.tokens.auth.AuthHeader
-import com.palantir.tokens.auth.BearerToken
 import com.tetigi.monzonator.api.data.FeedItem
 import com.tetigi.monzonator.api.requests.CreateFeedItemRequest
 import com.tetigi.monzonator.api.requests.RegisterWebhookRequest
+import com.tetigi.monzonator.resources.MonzoRefreshingTokenResource
+import io.dropwizard.Application
+import io.dropwizard.Configuration
+import io.dropwizard.setup.Environment
 import org.junit.Test
-import java.net.URL
+import java.net.URI
 import java.nio.file.Paths
-import javax.ws.rs.Consumes
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-class MonzoServiceSmokeTests {
+class MonzoServiceSmokeTests: Application<Configuration>() {
+
+    override fun run(configuration: Configuration, env: Environment) {
+        env.jersey().register(HttpRemotingJerseyFeature.INSTANCE)
+        env.jersey().register(tokenService)
+    }
 
     companion object {
-        private val TEST_URL: URL = URL("http://www.nyan.cat/cats/original.gif")
+        private val TEST_URI: URI = URI("http://www.nyan.cat/cats/original.gif")
+        private val monzoService: MonzoService by lazy { monzoService() }
+        private val authService: MonzoAuthService by lazy { authService() }
+        private val tokenService: MonzoRefreshingTokenResource by lazy {
+            MonzoRefreshingTokenResource(
+                    System.getProperty("clientId"),
+                    System.getProperty("clientSecret"),
+                    authService,
+                    URI("https://google.com"),
+                    URI("http://localhost:8080")
+            )
+        }
+        private fun monzoService(): MonzoService {
+            val sslConfig = SslConfiguration.of(Paths.get("var/security/truststore.jks"))
+            val config = ClientConfigurations.of(
+                    listOf(MonzoService.DEFAULT_MONZO_URI),
+                    SslSocketFactories.createSslSocketFactory(sslConfig),
+                    SslSocketFactories.createX509TrustManager(sslConfig)
+            )
+
+            return KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
+        }
+
+        private fun authService(): MonzoAuthService {
+            val sslConfig = SslConfiguration.of(Paths.get("var/security/truststore.jks"))
+            val config = ClientConfigurations.of(
+                    listOf(MonzoService.DEFAULT_MONZO_URI),
+                    SslSocketFactories.createSslSocketFactory(sslConfig),
+                    SslSocketFactories.createX509TrustManager(sslConfig)
+            )
+
+            return KotlinRetrofit2Client.create(MonzoAuthService::class.java, "auth", config)
+        }
+
+        private val token: AuthHeader by lazy {
+            MonzoServiceSmokeTests().run("server")
+            tokenService.startBlockingAuthTokenRequest()
+            tokenService.getRefreshingToken()
+        }
     }
-
-    private fun monzoService(): MonzoService {
-        val sslConfig = SslConfiguration.of(Paths.get("var/security/truststore.jks"))
-        val config = ClientConfigurations.of(
-                listOf(MonzoService.DEFAULT_MONZO_URL),
-                //listOf("http://localhost:8080"),
-                SslSocketFactories.createSslSocketFactory(sslConfig),
-                SslSocketFactories.createX509TrustManager(sslConfig)
-        )
-
-        return KotlinRetrofit2Client.create(MonzoService::class.java, "monzo", config)
-
-    }
-
-    private fun token(): AuthHeader =
-        AuthHeader.of(BearerToken.valueOf("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaSI6Im9hdXRoY2xpZW50XzAwMDA5NFB2SU5ER3pUM2s2dHo4anAiLCJleHAiOjE1MDcwNjU4MjIsImlhdCI6MTUwNzA0NDIyMiwianRpIjoidG9rXzAwMDA5UDlBTk5oSm1lQ3g2V3FuV1QiLCJ1aSI6InVzZXJfMDAwMDlDbzBTVjNBRXhncDU0NDR1WCIsInYiOiIyIn0.UzkJx3l3fZv9ocZP8uqbaJfG5aZv3puuOM0dOn39ezc"))
 
     private fun anAccountId(): String {
-        val response = monzoService().getAccounts(token()).call()
+        val response = monzoService.getAccounts(token).call()
         if (response.accounts.isEmpty()) {
             error("Could not find any accounts to test with :(")
         } else {
@@ -51,7 +77,7 @@ class MonzoServiceSmokeTests {
     }
 
     private fun aTransactionId(): String {
-        val response = monzoService().getTransactions(token(), anAccountId()).call()
+        val response = monzoService.getTransactions(token, anAccountId()).call()
         if (response.transactions.isEmpty()) {
             error("Could not find any transactions to test with :(")
         } else {
@@ -60,10 +86,10 @@ class MonzoServiceSmokeTests {
     }
 
     private fun aWebhookId(): String {
-        val response = monzoService().getWebhooks(token(), anAccountId()).call()
+        val response = monzoService.getWebhooks(token, anAccountId()).call()
         return if (response.webhooks.isEmpty()) {
-            monzoService().registerWebhook(token(), RegisterWebhookRequest(anAccountId(), TEST_URL))
-            val newResponse = monzoService().getWebhooks(token(), anAccountId()).call()
+            monzoService.registerWebhook(token, RegisterWebhookRequest(anAccountId(), TEST_URI))
+            val newResponse = monzoService.getWebhooks(token, anAccountId()).call()
             if (newResponse.webhooks.isEmpty()) {
                 error("Could not create a new webhook to test with :(")
             } else {
@@ -76,22 +102,22 @@ class MonzoServiceSmokeTests {
 
     @Test
     fun testGetAccounts() {
-        monzoService().getAccounts(token()).call()
+        monzoService.getAccounts(token).call()
     }
 
     @Test
     fun testGetBalance() {
-        monzoService().getBalance(token(), anAccountId()).call()
+        monzoService.getBalance(token, anAccountId()).call()
     }
 
     @Test
     fun testGetTransaction() {
-        monzoService().getTransaction(token(), aTransactionId()).call()
+        monzoService.getTransaction(token, aTransactionId()).call()
     }
 
     @Test
     fun testGetTransactions() {
-        monzoService().getTransactions(token(), anAccountId()).call()
+        monzoService.getTransactions(token, anAccountId()).call()
     }
 
     @Test
@@ -102,42 +128,42 @@ class MonzoServiceSmokeTests {
 
     @Test
     fun testCreateFeedItem() {
-        monzoService().createFeedItem(
-                token(),
+        monzoService.createFeedItem(
+                token,
                 CreateFeedItemRequest.fromFeedItem(
                         anAccountId(),
                         FeedItem.BasicFeedItem(
                                 "Hullo from monzonator",
-                                TEST_URL,
+                                TEST_URI,
                                 "THIS IS REAL LIFE",
                                 null,
                                 null,
                                 null
                         ),
-                        URL("http://www.nyan.cat/")
+                        URI("http://www.nyan.cat/")
                 )
         ).call()
     }
 
     @Test
     fun testRegisterWebhook() {
-        monzoService().registerWebhook(
-                token(),
+        monzoService.registerWebhook(
+                token,
                 RegisterWebhookRequest(
                         anAccountId(),
-                        TEST_URL
+                        TEST_URI
                 )
         ).call()
     }
 
     @Test
     fun testGetWebhooks() {
-        monzoService().getWebhooks(token(), anAccountId()).call()
+        monzoService.getWebhooks(token, anAccountId()).call()
     }
 
     @Test
     fun testDeleteWebhook() {
-        monzoService().deleteWebhook(token(), aWebhookId()).call()
+        monzoService.deleteWebhook(token, aWebhookId()).call()
     }
 
     @Test

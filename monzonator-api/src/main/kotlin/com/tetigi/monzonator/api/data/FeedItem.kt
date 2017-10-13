@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.palantir.remoting3.ext.jackson.ObjectMappers
 import java.awt.Color
-import java.net.URL
+import java.net.URI
 
 sealed class FeedItem(
         @JsonIgnore val type: FeedItemType
@@ -15,7 +15,7 @@ sealed class FeedItem(
 
     data class BasicFeedItem (
             val title: String,
-            val imageUrl: URL,
+            val imageUrl: URI,
             val body: String?,
             val backgroundColor: Color?,
             val titleColor: Color?,

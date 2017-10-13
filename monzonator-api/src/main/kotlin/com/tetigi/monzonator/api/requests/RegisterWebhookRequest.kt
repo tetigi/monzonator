@@ -1,8 +1,12 @@
 package com.tetigi.monzonator.api.requests
 
-import java.net.URL
+import com.tetigi.monzonator.utils.FieldMappable
+import java.net.URI
 
 data class RegisterWebhookRequest(
         val accountId: String,
-        val url: URL
+        val url: URI
+): FieldMappable(
+        "account_id" to accountId,
+        "url" to url
 )
