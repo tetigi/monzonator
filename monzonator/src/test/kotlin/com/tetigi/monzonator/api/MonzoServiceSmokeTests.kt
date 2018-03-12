@@ -18,6 +18,7 @@ import org.junit.Test
 import java.net.URI
 import java.nio.file.Paths
 
+/*
 class MonzoServiceSmokeTests: Application<Configuration>() {
 
     override fun run(configuration: Configuration, env: Environment) {
@@ -184,3 +185,4 @@ class MonzoServiceSmokeTests: Application<Configuration>() {
         error("Not implemented")
     }
 }
+        */
