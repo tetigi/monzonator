@@ -59,7 +59,7 @@ class Main(
             tokenService.startBlockingAuthTokenRequest()
 
             // Example call
-            println(monzo.getAccounts(tokenService.getRefreshingToken()).call())
+            println(monzo.getTransactions(tokenService.getRefreshingToken(), "acc_00009OgKrWja7BhHGyzXOL").call().transactions.reversed().take(10))
         }
     }
 }
