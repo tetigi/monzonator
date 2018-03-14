@@ -67,7 +67,7 @@ allprojects {
 		publications = ['mavenPublication']
 
 		pkg {
-			repo = 'monzonator'
+			repo = 'Monzonator'
 			name = 'monzonator'
 			userOrg = 'tetigi'
 			licenses = ['Apache-2.0']
