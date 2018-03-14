@@ -11,8 +11,11 @@ Add the `monzonator` and `monzonator-api` libs to your project in gradle.
 
 https://bintray.com/tetigi/Monzonator
 
-`compile 'com.tetigi:monzonator:<latest-version>`
-`compile 'com.tetigi:monzonator-api:<latest-version>`
+In gradle:
+
+`compile 'com.tetigi:monzonator:<latest-version>'`
+
+`compile 'com.tetigi:monzonator-api:<latest-version>'`
 
 You can see a full working example in `src/main/kotlin/com/tetigi/monzonator/Main.kt`.
 
