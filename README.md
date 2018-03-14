@@ -9,7 +9,13 @@ Getting started with `monzonator` is super easy!
 
 Add the `monzonator` and `monzonator-api` libs to your project in gradle.
 
-```TODO```
+https://bintray.com/tetigi/Monzonator
+
+In gradle:
+
+`compile 'com.tetigi:monzonator:<latest-version>'`
+
+`compile 'com.tetigi:monzonator-api:<latest-version>'`
 
 You can see a full working example in `src/main/kotlin/com/tetigi/monzonator/Main.kt`.
 
