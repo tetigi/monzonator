@@ -55,7 +55,7 @@ publishing {
                 classifier "javadoc"
             }
             groupId 'com.tetigi'
-            artifactId 'monzonator'
+            artifactId 'monzonator-api'
             version gitVersion()
             pom.withXml {
                 def root = asNode()

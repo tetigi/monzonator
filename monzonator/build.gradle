@@ -40,3 +40,48 @@ buildscript {
 repositories {
     mavenCentral()
 }
+
+def pomConfig = {
+	licenses {
+		license {
+			name "The Apache Software License, Version 2.0"
+			url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+			distribution "repo"
+		}
+	}
+	developers {
+		developer {
+			id "tetigi"
+			name "Luke Tomlin"
+			email "luke.tomlin@gmail.com"
+		}
+	}
+
+	scm {
+		url "https://github.com/tetigi/monzonator"
+	}
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            groupId 'com.tetigi'
+            artifactId 'monzonator'
+            version gitVersion()
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'An it-just-works Kotlin lib for Monzo.')
+                root.appendNode('name', 'monzonator')
+                root.appendNode('url', 'https://github.com/tetigi/monzonator')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
