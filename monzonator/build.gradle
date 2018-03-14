@@ -62,6 +62,26 @@ def pomConfig = {
 	}
 }
 
+bintray {
+	user = System.getProperty('bintray.user')
+	key = System.getProperty('bintray.key')
+	publications = ['mavenPublication']
+
+	pkg {
+		repo = 'Monzonator'
+		name = 'monzonator'
+		userOrg = 'tetigi'
+		licenses = ['Apache-2.0']
+		vcsUrl = 'https://github.com/tetigi/monzonator.git'
+		version {
+			name = gitVersion()
+			desc = gitVersion()
+			released  = new Date()
+		}
+	}
+
+}
+
 publishing {
     publications {
         mavenPublication(MavenPublication) {
