@@ -9,6 +9,7 @@ import com.palantir.remoting3.servers.jersey.HttpRemotingJerseyFeature
 import com.tetigi.monzonator.api.MonzoAuthService
 import com.tetigi.monzonator.api.MonzoRefreshingTokenService
 import com.tetigi.monzonator.api.MonzoService
+import com.tetigi.monzonator.api.utils.Monzo
 import com.tetigi.monzonator.resources.MonzoRefreshingTokenResource
 import io.dropwizard.Application
 import io.dropwizard.Configuration
@@ -32,7 +33,7 @@ class Main(
             // Create ssl and client configurations
             val sslConfig = SslConfiguration.of(Paths.get("monzonator/var/security/truststore.jks"))
             val config = ClientConfigurations.of(
-                    listOf(MonzoService.DEFAULT_MONZO_URI),
+                    listOf(Monzo.DEFAULT_MONZO_URI),
                     SslSocketFactories.createSslSocketFactory(sslConfig),
                     SslSocketFactories.createX509TrustManager(sslConfig)
             )

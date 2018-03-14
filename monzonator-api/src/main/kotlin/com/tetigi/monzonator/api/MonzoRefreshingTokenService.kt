@@ -21,8 +21,4 @@ interface MonzoRefreshingTokenService {
      * an [IllegalStateException].
      */
     fun getRefreshingToken(): AuthHeader
-
-    companion object {
-        const val CALLBACK_URI: String = "oauth/callback"
-    }
 }

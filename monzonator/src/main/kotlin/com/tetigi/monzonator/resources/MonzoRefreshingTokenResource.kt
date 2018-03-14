@@ -5,6 +5,7 @@ import com.palantir.tokens.auth.AuthHeader
 import com.tetigi.monzonator.api.MonzoAuthService
 import com.tetigi.monzonator.api.MonzoRefreshingTokenService
 import com.tetigi.monzonator.api.requests.auth.AuthorizationRequest
+import com.tetigi.monzonator.api.utils.Auth
 import com.tetigi.monzonator.auth.RefreshingAuthToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,7 +26,7 @@ class MonzoRefreshingTokenResource(
 
     private val state: AtomicReference<String?> = AtomicReference(null)
     private val authToken: AtomicReference<AuthHeader?> = AtomicReference(null)
-    private val redirectUri: URI = URI("$serviceLocation/${MonzoRefreshingTokenService.CALLBACK_URI}")
+    private val redirectUri: URI = URI("$serviceLocation/${Auth.CALLBACK_URI}")
 
     /**
      * Initiates the auth token request workflow and blocks until it is completed
@@ -33,7 +34,7 @@ class MonzoRefreshingTokenResource(
     fun startBlockingAuthTokenRequest() {
         val state = UUID.randomUUID().toString()
         this.state.set(state)
-        val authLink = MonzoAuthService.getAuthLink(
+        val authLink = Auth.getAuthLink(
                 clientId,
                 redirectUri,
                 state

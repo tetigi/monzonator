@@ -128,6 +128,5 @@ interface MonzoService {
     ): Call<Empty>
 
     companion object {
-        val DEFAULT_MONZO_URI: String = "https://api.monzo.com"
     }
 }
